@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.fencer911.dao.UserDAO">
+
+    <resultMap id="UserMapping" type="User">
+        <id column="uid" property="uid" javaType="int"/>
+        <result column="name" property="name" javaType="String"/>
+        <result column="mobile" property="mobile" javaType="String"/>
+        <result column="credit_id" property="creditId" javaType="String"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 获取所有用户 -->
+    <select id="queryList" resultMap="UserMapping">
+        SELECT * FROM t_user
+    </select>
+
+    <!-- 添加新用户 -->
+    <insert id="insert" keyProperty="uid" parameterType="cn.fencer911.entity.User" >
+        INSERT INTO t_user(uid, name, mobile, credit_id, create_time)
+        VALUES (#{uid},#{name},#{mobile},#{creditId},#{createTime})
+    </insert>
+
+</mapper>

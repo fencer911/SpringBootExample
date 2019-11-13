@@ -1,0 +1,58 @@
+server:
+  port: 9000
+
+spring:
+    #服务器环境
+    #active: prod
+
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  aop:
+    auto: true
+  application:
+    name: dbsharding
+  #sharding  
+  shardingsphere:
+    datasource:
+      names: sharding0db,sharding1db
+      sharding0db:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3306/sharding0db?useUnicode=true&useSSL=false&useAffectedRows=true&characterEncoding=utf8
+        driver-class-name: com.mysql.jdbc.Driver
+        username: root
+        password: 123456
+      sharding1db:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3306/sharding1db?useUnicode=true&useSSL=false&useAffectedRows=true&characterEncoding=utf8
+        driver-class-name: com.mysql.jdbc.Driver
+        username: root
+        password: 123456  
+
+    sharding:
+      # 分库分表策略
+      default-database-strategy:
+        inline:
+          # 分片的列
+          sharding-column: uid
+          # 分片的表达式，groovy语言，这里是对uid进行取余，如果为结果为0则分到sharding0db，结果为1则分到sharding1db
+          algorithm-expression: sharding$->{uid % 2}db
+      tables:
+        t_user:
+          actual-data-nodes: sharding$->{0..1}db.t_user_$->{0..1}
+          table-strategy:
+            inline:
+              sharding-column: uid
+              # 分片的表达式，对uid倒数第二位取余，如果为结果为0则分到t_user_0，结果为1则分到t_user_1
+              algorithm-expression: t_user_$->{uid.intdiv(10) % 2}
+              
+
+# MyBatis配置
+mybatis:
+  # Mapper映射文件的位置
+  mapper-locations: classpath*:mappers/*.xml
+  # 包下所有类的别名，配置别名为了在对象映射文件中接收参数类型和返回参数类型时省略包路径
+  type-aliases-package: cn.fencer911.entity
+
