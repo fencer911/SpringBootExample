@@ -1,1 +1,2 @@
-# SpringBootExample
+# SpringBootExamples
+把一些写常用的配置积累下来
